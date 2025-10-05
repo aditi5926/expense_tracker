@@ -1,8 +1,8 @@
-# main.py
 import streamlit as st
 import pandas as pd
 import sqlite3
 from db import get_connection
+from ai_utils import ai_predict_category  # imported from separate file
 
 st.set_page_config(page_title="Expense Tracker", layout="wide")
 conn = get_connection()
@@ -46,7 +46,19 @@ st.caption(f"Logged in as **{st.session_state['user'][1]}**")
 # ---------- ADD NEW EXPENSE ----------
 with st.expander("➕ Add New Expense", expanded=False):
     desc = st.text_input("Description", key="add_desc")
-    cat = st.selectbox("Category", ["Food", "Travel", "Supplies", "Other"], key="add_category")
+
+    if desc:
+        suggested_cat = ai_predict_category(desc)
+        st.info(f"🤖 AI Suggestion: {suggested_cat}")
+    else:
+        suggested_cat = "Food"
+
+    cat = st.selectbox(
+        "Category",
+        ["Food", "Travel", "Supplies", "Other"],
+        index=["Food", "Travel", "Supplies", "Other"].index(suggested_cat),
+        key="add_category"
+    )
     reimb = st.checkbox("Reimbursable?", key="add_reimb")
     qty = st.number_input("Quantity", min_value=1.0, value=1.0, key="add_qty")
     price = st.number_input("Unit Price", min_value=0.0, value=0.0, key="add_price")
@@ -61,7 +73,7 @@ with st.expander("➕ Add New Expense", expanded=False):
             """, (st.session_state['user'][0], desc, cat, int(reimb), qty, price, total))
             conn.commit()
             st.success("Expense added!")
-            st.session_state['reload'] = not st.session_state.get('reload', False)  # trigger rerun
+            st.session_state['reload'] = not st.session_state.get('reload', False)
         else:
             st.warning("Description required!")
 
@@ -92,14 +104,13 @@ if not df.empty:
         conn.execute("DELETE FROM expenses WHERE id=?", (del_id,))
         conn.commit()
         st.success("Deleted successfully!")
-        st.session_state['reload'] = not st.session_state.get('reload', False)  # trigger rerun
+        st.session_state['reload'] = not st.session_state.get('reload', False)
 
 # ---------- EDIT ----------
 st.subheader("✏️ Edit an Expense")
 if not df.empty:
     edit_id = st.selectbox("Select Expense ID to Edit", df["id"], key="edit_id")
     
-    # Load expense into session_state
     if st.button("Load Expense", key=f"load_{edit_id}"):
         expense = conn.execute("SELECT * FROM expenses WHERE id=?", (edit_id,)).fetchone()
         if expense:
@@ -114,9 +125,9 @@ if not df.empty:
     if 'edit_expense' in st.session_state:
         new_desc = st.text_input("Description", value=st.session_state['edit_expense']['desc'], key=f"desc_{edit_id}")
         new_cat = st.selectbox(
-            "Category", 
-            ["Food", "Travel", "Supplies", "Other"], 
-            index=["Food","Travel","Supplies","Other"].index(st.session_state['edit_expense']['cat']),
+            "Category",
+            ["Food", "Travel", "Supplies", "Other"],
+            index=["Food", "Travel", "Supplies", "Other"].index(st.session_state['edit_expense']['cat']),
             key=f"cat_{edit_id}"
         )
         new_reimb = st.checkbox("Reimbursable?", value=st.session_state['edit_expense']['reimb'], key=f"reimb_{edit_id}")
@@ -134,7 +145,7 @@ if not df.empty:
             conn.commit()
             st.success("Expense updated successfully!")
             del st.session_state['edit_expense']
-            st.session_state['reload'] = not st.session_state.get('reload', False)  # trigger rerun
+            st.session_state['reload'] = not st.session_state.get('reload', False)
 
 # ---------- SUMMARY + GRAPH ----------
 if not df.empty:
