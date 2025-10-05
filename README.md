@@ -2,40 +2,23 @@
 
 A **Streamlit-based expense tracker** that allows users to manage personal or work-related expenses with **AI-assisted category suggestions** using Google Gemini. Users can add, edit, delete, filter, and visualize expenses through a simple and intuitive interface.
 
+
 ---
 
-## **Features**
+## 🚀 Features
 
-### ✅ User Authentication
-- Secure **login and registration** system
-- Passwords stored in **SQLite database**
-
-### ✅ Expense Management (CRUD)
-- **Create, Read, Update, Delete** expenses
-- Fields include:
-  - Description (text)
-  - Category (AI-suggested)
-  - Reimbursable (boolean)
-  - Quantity & Unit Price
-  - Total (calculated)
-  
-### ✅ AI Integration
-- Uses **Google Gemini API** to suggest categories automatically based on expense description.
-- Fallback logic ensures a default category is always set.
-
-### ✅ Data Filtering & Pagination
-- Filter expenses by category
-- Pagination support (5 items per page)
-- Optional sorting and search
-
-### ✅ Data Visualization
-- Summarizes total expenses
-- Graphs by category using **Altair**
-
-### ✅ Additional Features
-- Editable expenses
-- Deletable expenses
-- Logout functionality
+| Feature | Description |
+|----------|--------------|
+| 🤖 **AI Category Suggestion** | Uses **Google Gemini API** to automatically predict the category of an expense based on its description. |
+| 🧾 **CRUD Operations** | Add, view, edit, and delete expenses easily using an interactive Streamlit UI. |
+| 📊 **Expense Summary & Visualization** | View total expenditure and bar charts showing spending by category. |
+| 🔍 **Category Filtering** | Quickly filter expenses by category such as Food, Travel, Supplies, or Others. |
+| 📑 **Pagination Support** | Expenses are neatly paginated for easy navigation and faster loading. |
+| 🔐 **User Authentication** *(optional)* | Securely log in or sign up to manage your personal expense data. |
+| 💬 **AI Fallback Mode** | If the Gemini API fails, a local placeholder AI suggests categories based on keywords. |
+| 💾 **SQLite Database** | Stores all expenses locally in a lightweight SQLite database. |
+| 🧠 **Modular Code Design** | Clear separation of app logic (`main.py`), database (`db.py`), and AI (`ai_utils.py`). |
+| ☁️ **Deployable on Streamlit Cloud** | Easily host your app directly via GitHub using Streamlit Community Cloud. |
 
 ---
 
